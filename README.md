@@ -141,7 +141,7 @@ Two top-level inference entrypoints are included:
 The recommended release wrapper is:
 
 ```bash
-bash scripts/infer_goae.sh
+bash scripts/inference_relighting.sh
 ```
 
 By default it uses:
@@ -170,7 +170,7 @@ Example with overrides:
 ```bash
 CUDA_VISIBLE_DEVICES=0 \
 OUTDIR=outputs/inference/custom_run \
-bash scripts/infer_goae.sh
+bash scripts/inference_relighting.sh
 ```
 
 You can also call the Python entrypoint directly:
@@ -221,7 +221,7 @@ Training of the relighting / reflectance model is exposed through [`train_lights
 The recommended bash wrapper is:
 
 ```bash
-bash scripts/train_relight_encoder.sh
+bash scripts/train_relighting_encoder.sh
 ```
 
 The wrapper defaults to the current release checkpoints and a baseline MPI training configuration:
@@ -259,7 +259,7 @@ NUM_GPUS=3 \
 NUM_VIEWS=1 \
 LIGHTSTAGE_RES=half \
 WT_LPIPS=0.3 \
-bash scripts/train_relight_encoder.sh
+bash scripts/train_relighting_encoder.sh
 ```
 
 A minimal example looks like:

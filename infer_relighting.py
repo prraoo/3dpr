@@ -60,21 +60,6 @@ def build_dataloader(data_path, batch=1, use_mask=False, pin_memory=True, prefet
 
 def get_lightdirs(device, dataset_name, light_dirs_path=None):
 	if dataset_name == 'mpi':
-
-		"""
-		Note LSX_light_positions_mpi_ordered.txt was created as follows:
-		light_dirs = np.loadtxt('/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/vorf_gan_config/LSX_light_positions.txt').astype(np.float32)
-		light_order = np.loadtxt('/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/vorf_gan_config/LSX3_light_z_spiral.txt').astype(np.int16)-1 # convert to zero indexing
-		assert len(light_order) == len(light_dirs), "Number of light directions do no match indices"
-		light_dirs = light_dirs[light_order]
-		"""
-		# light_dirs = np.loadtxt('/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/vorf_gan_config/LSX_light_positions.txt')
-		# light_order = np.loadtxt('/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/vorf_gan_config/LSX3_light_z_spiral.txt').astype(np.int16)-1 # convert to zero indexing
-		# assert len(light_order) == len(light_dirs), "Number of light directions do no match indices"
-		# light_dirs = light_dirs[light_order]
-		# np.savetxt('/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/vorf_gan_config/LSX_light_positions_mpi_ordered_1.txt', light_dirs, fmt="%0.4f", delimiter=' ')
-
-		# light_dirs = np.loadtxt('/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/vorf_gan_config/LSX_light_positions_mpi_ordered_1.txt').astype(np.float32)
 		light_dirs_path = light_dirs_path or '/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/vorf_gan_config/LSX_light_positions_mpi.txt'
 		light_dirs = np.loadtxt(light_dirs_path).astype(np.float32)
 	elif dataset_name == 'weyrich':
@@ -210,47 +195,9 @@ def combine_olat_images(olat_path, olat_fnames_list, indices, params):
 @torch.no_grad()
 def infer_main(opts, device, now):
 	gen_shape = opts.shape
-	use_gt_olat = True
+	use_gt_olat = False
 	
-	## Get Environment Maps
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor_2018-HD/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-eval/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval-1/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-ds-rot-new/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor_2018-ds/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/emap-2D_final/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/emap-TR/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval-1/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-ds-rot-new/'
-	
-	# emap_path = '/CT/VORF_GAN4/static00/datasets/env_maps/indoor/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/quant-eval/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor_2018-HD-best/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-rot-train/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg25/'
 	emap_path = opts.envmap_dir or '/HPS/prao2/static00/datasets/Environment-Maps/quant-eval/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_90_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_50_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_25_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_10_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_5_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_random-all/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/envmaps-1-holo/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-new_50_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-new_25_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-new_10_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-new_5_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_eval/'
-	# emap_path = '/CT/VORF_GAN3/work/code/TotalRelighting/WeyrichOLAT/envs'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_25_random/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-ds-rot-train/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-rot-train/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/siga25-rot-eval/'
-	# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-new_10_random'
-	# emap_path = '/CT/VORF_GAN4/nobackup/evaluation/CVPR26/relight_anyone_envmaps/'
 
 	emap_config = natsorted(glob.glob1(emap_path, '*.exr'), reverse=False)
 	# random.shuffle(emap_config)
@@ -313,16 +260,6 @@ def infer_main(opts, device, now):
 	# Get the environment pixels to be sampled
 	light_dirs_npy = dirs.data.cpu().numpy()
 	uv_idx = get_dir2uv(light_dirs_npy, uv_res=UV_res, dataset_name=opts.dataset_name)
-	
-	if use_gt_olat and (opts.dataset_name == 'mpi'):
-		ID = 'ID20010'
-		gt_olat_dir = f"/CT/VORF_GAN5/static00/datasets/FOLAT_c2_align/Cam06/{ID}/"
-		lm_file = f'/CT/VORF_GAN4/static00/datasets/OLAT_c2-Multiple-IDs/10001/{ID}/transform/Cam06_{ID}.txt'
-		scale_crop_params = np.loadtxt(lm_file)
-		
-		gt_fnames_list_all = natsorted(glob.glob1(gt_olat_dir, '*.exr'))
-		gt_fnames_list = [f for i,f in enumerate(natsorted(glob.glob1(gt_olat_dir, '*.exr'))) if i in all_light_indices]
-		gt_fnames_list = [f for i, f in enumerate(gt_fnames_list) if i % ls_freq == 0]
 	
 	## main loop
 	num_images = 0
@@ -528,35 +465,10 @@ def infer_main(opts, device, now):
 					cv2.imwrite(f'{save_dir}/{scan_name}_{emap_name[:-4]}.png', cv2.hconcat([np_img]))
 		
 		if opts.multi_view:
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor_2018-ds/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-eval/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval-2/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-ds-rot-new/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/emap-2D_baselines/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/emap-2D_final/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/emap-siga/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval-1/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-ds-rot-new/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/eval-1/'
-			
-			# emap_path = '/CT/VORF_GAN4/static00/datasets/env_maps/indoor/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/quant-eval/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg25-all/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_random/'
-			# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/envmaps-1-holo/'
-			
 			emap_config = natsorted(glob.glob1(emap_path, '*.exr'))
-			# random.shuffle(emap_config)
 			emap_list = emap_config[:45]
 			
 			assert len(emap_list) > 0
-			
-			# emap_path_1 = '/HPS/prao2/static00/datasets/Environment-Maps/indoor_2018-HD-best/'
-			# emap_config_1 = sorted(glob.glob1(emap_path_1, '*.exr'))
-			# random.shuffle(emap_config_1)
-			# emap_list = emap_list + emap_config_1[:10]
 			
 			save_invert_dir = os.path.join(opts.outdir, 'invert_mv', scan_name)
 			os.makedirs(save_invert_dir, exist_ok=True)
@@ -564,49 +476,9 @@ def infer_main(opts, device, now):
 			save_invert_mask_dir = os.path.join(opts.outdir, 'mask_mv', scan_name)
 			os.makedirs(save_invert_mask_dir, exist_ok=True)
 			
-			# n_views = 8 + 1
-			# coef_0 = np.array([0.])
-			# coef_pitch_0 = np.array([0.])
-			#
-			# coef = np.concatenate([coef_0, np.sort(2 * np.random.rand(n_views) - 1) * 3])
-			# coef_pitch = np.concatenate([coef_pitch_0, np.sort(0.5 * np.random.rand(n_views) - 1) * 2])
-			
-			# n_views = 5
-			# coef = [0, -0.5, -1, 0.5, 1]
-			# coef_pitch = [0, 0, -1, 0.5, 0]
-			
-			# n_views = 5
-			# coef = [-1, -0.5, 0, 0.5, 1]
-			# coef_pitch = [0, 0, 0, 0, 0]
-			#
-			# n_views = 6
-			# coef = [-3, -1.5, -0.5, 0.5, 1.5, 3]
-			# coef_pitch = [0, 0, 0, 0, 0, 0]
-
-			n_views = 8
 			coef = [3*x/30 for x in range(-30, 30)]
 			coef_pitch = [0 for x in range(-30, 30)]
-
-			# n_views = 3
-			# coef = [-1, 0, 1]
-			# coef_pitch = [0, 0, 0]
-
-			# n_views = 1
-			# coef = [0]
-			# coef_pitch = [0]
-			
-			# coef = [1, 0, -1, 1, 0 ,-1]
-			# coef_pitch = [0, 0, 0, -2, -2, -2]
-			# n_views = len(coef)
-			
-			# coef = [0]
-			# coef_pitch = [0]
-			# n_views = len(coef)
-			# save_indices = [54, 60, 99, 110]
-			# save_indices = [3, 36, 78, 86, 99]
-			# save_indices = [14, 16, 26, 54, 74, 87]
-			# save_indices = []
-			# save_indices = [x for x in range(len(dirs))]
+			n_views = len(coef)
 
 			yaw_list = []
 			pitch_list = []
@@ -877,18 +749,7 @@ def infer_main(opts, device, now):
 				w_frames = 180
 				camera_lookat_point = torch.tensor([0, 0, 0], device=device)
 				
-				## Get Environment Maps
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor_2018-HD/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-eval/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval-1/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor-ds-rot-new/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/emap-TR/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg25/'
-				emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/sigg-24-ppt-0_sparse_random/'
 				emap_config = sorted(glob.glob1(emap_path, '*.exr'))
-				# random.shuffle(emap_config)
 				emap_list = emap_config[0:0+25]
 				emap_ids = [emap_id for emap_id in emap_list]
 				
@@ -940,18 +801,6 @@ def infer_main(opts, device, now):
 						
 						save_path = os.path.join(save_dir, emap_name[:-4])
 						os.makedirs(save_path, exist_ok=True)
-						#
-						# Relighting with fixed lighting sampling
-						# from_emap = cv2.imread(os.path.join(emap_path, emap_name), -1).astype(np.float32)[:, :,::-1]
-						# from_emap = np.resize(from_emap, (10, 20, 3))
-						
-						# from_emap = from_emap[None].repeat(150, axis=0)
-						# u_indices = uv_idx[:, 0].astype(int)  # First column contains u indices
-						# v_indices = uv_idx[:, 1].astype(int)  # Second column contains v indices
-						# from_emap = from_emap[np.arange(150), u_indices, v_indices]
-						
-						
-						# Relighting with sampled envmap masks
 						from_emap = cv2.imread(os.path.join(emap_path, emap_name), -1).astype(np.float32)[:, :, ::-1]
 						from_emap = (from_emap - from_emap.min()) / (from_emap.max() - from_emap.min())
 						
@@ -996,11 +845,7 @@ def infer_main(opts, device, now):
 				save_path = os.path.join(mp4[0], mp4[1], 'rotate-cam01')
 				os.makedirs(save_path, exist_ok=True)
 				
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/indoor_2018-HD/'
-				emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/unseen-eval/'
-				# emap_path = '/HPS/prao2/static00/datasets/Environment-Maps/outdoor-ds-new/'
 				emap_config = sorted(glob.glob1(emap_path, '*.exr'))
-				# random.shuffle(emap_config)
 				emap_list = emap_config
 				olat_img = None
 				
@@ -1133,9 +978,9 @@ def infer_main(opts, device, now):
 			
 			if opts.multi_view:
 				imgs_multi_view = []
-				coef = [ 1 , 0, -1 ]
+				coef = [1, 0, -1]
 				for j in range(3):
-					yaw =  coef[j] * np.pi*25/360
+					yaw = coef[j] * np.pi*25/360
 					pitch = 0
 					c = get_pose(cam_pivot=cam_pivot, intrinsics=intrinsics, yaw=yaw, pitch=pitch)
 					

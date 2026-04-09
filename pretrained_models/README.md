@@ -12,4 +12,4 @@ Expected files:
 - `encoder_FFHQ.pt`: inversion encoder checkpoint.
 - `afa_FFHQ.pt`: AFA checkpoint.
 
-Reflectance checkpoints are typically produced by training and can stay outside this folder. The release inference wrapper [`scripts/infer_goae.sh`](/CT/VORF_GAN4/work/code/3dpr/scripts/infer_goae.sh) expects the reflectance checkpoint path as an explicit argument.
+Reflectance checkpoints are typically produced by training and can stay outside this folder. The release inference wrapper [`scripts/inference_relighting.sh`](/CT/VORF_GAN4/work/code/3dpr/scripts/inference_relighting.sh) expects the reflectance checkpoint path as an explicit argument.
