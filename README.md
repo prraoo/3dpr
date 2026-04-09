@@ -56,7 +56,7 @@ Details are listed in [`pretrained_models/README.md`](/CT/VORF_GAN4/work/code/3d
 
 Pretrained model download link:
 
-- Google Drive: `TODO_ADD_GOOGLE_DRIVE_LINK`
+- Google Drive: [https://drive.google.com/drive/folders/1KdS9KlDL70JpSAZilIoyyGZU5-UXwA-l?usp=sharing](Pretrained-models)
 
 Reflectance checkpoints for relighting inference are provided separately as training outputs and are passed explicitly to the inference script.
 
